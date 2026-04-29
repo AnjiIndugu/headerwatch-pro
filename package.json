@@ -1,0 +1,16 @@
+{
+  "name": "headerwatch",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "node server.js",
+    "build": "echo 'No build step required'",
+    "start": "node server.js",
+    "clean": "rm -rf dist",
+    "lint": "echo 'No lint required'"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}

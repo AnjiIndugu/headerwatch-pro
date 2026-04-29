@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HeaderWatch Pro 🛡️ - Web Security Header Analyzer</title>
+    <link rel="stylesheet" href="/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Final Splash Screen -->
+    <div id="splash-screen" class="splash-screen hidden">
+        <div id="splash-skip" class="splash-skip">Skip →</div>
+        <div class="splash-content">
+            <div id="splash-step-1" class="splash-step active">
+                <div class="splash-shield">🛡️</div>
+            </div>
+            <div id="splash-step-2" class="splash-step">
+                <div class="splash-text-main">Every website sends hidden<br>safety instructions to your browser.</div>
+            </div>
+            <div id="splash-step-3" class="splash-step">
+                <div class="splash-text-danger">Most sites get them wrong.</div>
+                <div class="splash-text-sub">Leaving users exposed<br>without knowing it.</div>
+            </div>
+            <div id="splash-step-4" class="splash-step">
+                <div class="splash-text-info">HeaderWatch checks them for you.</div>
+                <ul class="splash-list">
+                    <li class="splash-li">✓ Any website, instantly</li>
+                    <li class="splash-li">✓ Clear grade — A to F</li>
+                    <li class="splash-li">✓ Plain English explanation</li>
+                </ul>
+            </div>
+            <div id="splash-step-5" class="splash-step">
+                <div class="splash-text-free">Free. No login. No tracking.</div>
+                <button id="splash-btn" class="splash-btn">Check your first website →</button>
+            </div>
+        </div>
+        <div class="splash-dots">
+            <span class="splash-dot active" id="dot-1"></span>
+            <span class="splash-dot" id="dot-2"></span>
+            <span class="splash-dot" id="dot-3"></span>
+            <span class="splash-dot" id="dot-4"></span>
+            <span class="splash-dot" id="dot-5"></span>
+        </div>
+    </div>
+    
+    <div class="page-wrap" id="main-app">
+    <div class="page-bg-grid"></div>
+    <header class="hero-section" style="display: flex; flex-direction: column; align-items: center; text-align: center; padding-bottom: 0; margin-bottom: 0;">
+        <h1 style="font-size: 1.8rem; font-weight: 900; letter-spacing: 0.15em; color: white; text-shadow: 0 0 20px #00d4ff40; margin: 0;">
+            🛡️ HEADERWATCH PRO
+        </h1>
+        <div style="font-size: 1rem; color: #00d4ff; letter-spacing: 0.1em; margin-top: 4px; margin-bottom: 8px;">
+            HTTP Security Analyzer
+        </div>
+        <div style="font-size: 0.9rem; color: #9ca3af; margin-bottom: 24px;">
+            Inspect web security settings in real time.
+        </div>
+        <div style="display: flex; flex-direction: row; justify-content: center; gap: 8px; margin-bottom: 8px;">
+            <span style="background: #111827; border: 1px solid #1f2937; border-radius: 20px; padding: 4px 12px; font-size: 0.75rem; color: #6ee7b7; display: inline-flex; align-items: center; gap: 4px;">✅ Free</span>
+            <span style="background: #111827; border: 1px solid #1f2937; border-radius: 20px; padding: 4px 12px; font-size: 0.75rem; color: #6ee7b7; display: inline-flex; align-items: center; gap: 4px;">👁 Read-only</span>
+            <span style="background: #111827; border: 1px solid #1f2937; border-radius: 20px; padding: 4px 12px; font-size: 0.75rem; color: #6ee7b7; display: inline-flex; align-items: center; gap: 4px;">⚡ Instant</span>
+            <span style="background: #111827; border: 1px solid #1f2937; border-radius: 20px; padding: 4px 12px; font-size: 0.75rem; color: #6ee7b7; display: inline-flex; align-items: center; gap: 4px;">🔒 No login</span>
+        </div>
+    </header>
+
+    <main class="container" style="padding-top: 0; margin-top: 0;">
+
+
+        <!-- URL Input Section -->
+        <section class="scan-section" style="padding-top: 0; margin-top: 0;">
+            <form id="scan-form">
+                <div class="terminal-input-wrapper" id="input-wrapper">
+                    <span class="prompt-icon">🔍</span>
+                    <input type="text" id="url-input" placeholder="Enter domain (e.g. github.com)" required autocomplete="off" spellcheck="false" />
+                    <button type="submit" id="scan-btn">
+                        <span id="scan-btn-text">SCAN ▶</span>
+                        <span id="scan-btn-loader" class="hidden">SCANNING<span class="blink">...</span></span>
+                    </button>
+                    <div class="scan-glow" id="scan-glow-border"></div>
+                </div>
+            </form>
+            <div id="fetching-msg" class="fetching-text hidden">Fetching headers...</div>
+            <div class="quick-links">
+                <div class="chips-container" id="chips-container">
+                    <span class="chip">github.com</span>
+                    <span class="chip">stripe.com</span>
+                    <span class="chip">google.com</span>
+                    <span class="chip">example.com</span>
+                    <span class="chip">cloudflare.com</span>
+                    <span class="chip">mozilla.org</span>
+                    <span class="chip">amazon.com</span>
+                    <span class="chip">reddit.com</span>
+                    <span class="chip">wikipedia.org</span>
+                    <span class="chip">facebook.com</span>
+                </div>
+            </div>
+            <div id="error-message" class="error-banner hidden"></div>
+        </section>
+
+        <!-- Results Section (Hidden initially) -->
+        <div id="results-container" class="hidden">
+            <!-- Score Card -->
+            <section class="score-card-wrapper">
+                <div class="terminal-box">
+                    <div class="t-row t-header">
+                        <span class="t-label">TARGET</span>
+                        <span id="scan-target-url" class="t-value target-url"></span>
+                    </div>
+                    <div class="t-divider"></div>
+                    <div class="t-row t-main-score">
+                        <div class="grade-box grade-circle" id="grade-circle">
+                            <span id="grade-value">A</span>
+                        </div>
+                        <div class="score-right">
+                            <div class="score-fraction"><span id="score-value">0</span> / 100</div>
+                            <div class="score-text-label" id="score-text-level">SECURE</div>
+                        </div>
+                    </div>
+                    <div class="t-row t-stats">
+                        <div class="stat-line tooltip-container">
+                            <span class="stat-label">How sure are we?</span>
+                            <div class="progress-bar-bg"><div class="progress-bar-fill" id="confidence-bar"></div></div>
+                            <span class="stat-val"><span id="confidence-value">100</span>%</span>
+                            <div class="tooltip">Our confidence is based on how clearly observable this finding is. 100% means we directly saw (or didn't see) this header in the response. Lower scores mean we're making an educated guess based on available signals.</div>
+                        </div>
+                        <div class="stat-line">
+                            <span class="stat-label">Risk Level:</span>
+                            <span class="stat-val">● <span id="risk-level">STRONG</span></span>
+                        </div>
+                        <div class="stat-line">
+                            <span class="stat-label">Scanned:</span>
+                            <span class="stat-val" id="scan-time"></span>
+                        </div>
+                    </div>
+                    <div id="grade-human-explanation" class="human-explanation"></div>
+                    <div style="margin-top: 1rem; border-top: 1px dashed var(--border-color); padding-top: 1rem; display: flex; justify-content: flex-end;">
+                        <button id="share-report-btn" class="share-btn">📤 Share This Report</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- WHY THIS SCORE -->
+            <section class="why-score-section">
+                <div class="terminal-box">
+                    <div class="t-title">📊 How We Calculated This Grade</div>
+                    <div class="score-breakdown-grid" id="score-breakdown-content">
+                        <!-- Populated by JS -->
+                    </div>
+                    <div class="t-divider"></div>
+                    <div class="t-title" style="margin-top: 1rem;"><span style="color:var(--accent-warning);">💡</span> CONTEXT</div>
+                    <p class="context-paragraph" id="context-paragraph"></p>
+                </div>
+            </section>
+
+            <div class="analysis-grid">
+                <!-- Header Status Table -->
+                <section class="headers-overview">
+                    <div class="section-title">🔍 What Protections Does This Site Have?</div>
+                    <div class="grid-container" id="headers-grid">
+                        <!-- Populated by JS -->
+                    </div>
+                </section>
+
+                <!-- Detailed Findings -->
+                <section class="findings-section">
+                    <div class="section-title">⚠️ What's Wrong & How To Fix It</div>
+                    <div class="section-subtext" style="color:var(--text-muted); font-size:0.85rem; margin-top:-0.5rem; margin-bottom:1rem;">Tap any item to understand the risk in plain English</div>
+                    <div id="findings-list" class="findings-list">
+                        <!-- Populated by JS -->
+                    </div>
+                    
+                    <div class="section-title" id="partial-title" style="margin-top:2rem; display:none;">🔄 Partial Protections</div>
+                    <div class="section-subtext" id="partial-subtext" style="color:var(--text-muted); font-size:0.85rem; margin-top:-0.5rem; margin-bottom:1rem; display:none;">These protections are active in monitoring mode but not fully enforced.</div>
+                    <div id="partial-findings-list" class="findings-list partial-list">
+                        <!-- Populated by JS -->
+                    </div>
+
+                    <div class="section-title" style="margin-top:2rem;">✅ What This Site Is Doing Right</div>
+                    <div id="passing-findings-list" class="findings-list passing-list">
+                        <!-- Populated by JS -->
+                    </div>
+                    
+                    <div class="section-title" style="margin-top:2rem;">ℹ️ Additional Information</div>
+                    <div class="section-subtext" style="color:var(--text-muted); font-size:0.85rem; margin-top:-0.5rem; margin-bottom:1rem;">These are not security problems — just extra details we noticed.</div>
+                    <div id="info-findings-list" class="findings-list info-list">
+                        <!-- Populated by JS -->
+                    </div>
+                </section>
+            </div>
+            
+            <section class="raw-headers">
+                <details class="tech-details-block" id="tech-details-block">
+                    <summary class="section-title flex-between" style="cursor: pointer;">
+                        <span>🔬 Technical Details (For Developers) <span class="expand-indicator">▼</span></span>
+                    </summary>
+                    <div class="section-subtext" style="color:var(--text-muted); font-size:0.85rem; margin-top:0.5rem; margin-bottom:1rem;">This is the actual data your browser receives from the server</div>
+                    <div class="flex-between" style="margin-bottom: 0.5rem;">
+                        <span></span>
+                        <button id="copy-all-btn" class="copy-btn">Copy All 📋</button>
+                    </div>
+                    <div class="terminal-box code-box">
+                        <div style="color:var(--text-secondary); margin-bottom:1rem;" id="curl-command"></div>
+                        <div id="raw-headers-content" class="syntax-highlighted"></div>
+                    </div>
+                </details>
+            </section>
+        </div>
+
+
+    </main>
+
+    <!-- Share Modal -->
+    <div id="share-modal" class="modal hidden">
+        <div class="modal-content">
+            <h3 class="modal-title">📤 SHARE THIS SECURITY REPORT</h3>
+            <hr class="modal-divider" />
+            <pre class="share-preview" id="share-preview-text"></pre>
+            <div class="modal-actions gap-2">
+                <button id="modal-copy-btn" class="modal-btn primary">Copy to Clipboard</button>
+                <button id="modal-close-btn" class="modal-btn secondary">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="app-footer">
+        <div class="footer-terminal">
+            <div class="f-line">HeaderWatch Pro v2.0</div>
+            <div class="f-line">Built for AppSec & Frontend Engineering</div>
+            <div class="f-divider"></div>
+            <div class="f-line subtle">Analyzes HTTP response headers only.</div>
+            <div class="f-line subtle">Passive analysis tool aligned with OWASP HTTP Security Headers guidance.</div>
+            <div class="f-divider"></div>
+            <div class="f-links">
+                <a href="https://github.com" target="_blank" rel="noopener noreferrer">GitHub</a>
+                <a href="https://owasp.org/www-project-secure-headers/" target="_blank" rel="noopener noreferrer">OWASP Reference</a>
+                <a href="https://github.com/issues/new" target="_blank" rel="noopener noreferrer">Report Bug</a>
+            </div>
+        </div>
+    </footer>
+
+    </div> <!-- page-wrap end -->
+    <script src="/app.js"></script>
+</body>
+</html>
