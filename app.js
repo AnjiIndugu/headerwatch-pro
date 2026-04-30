@@ -237,6 +237,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function renderResults(data) {
+        document.getElementById('results-container').style.display = 'block';
+        const emptyState = document.getElementById('emptyState');
+        if (emptyState) emptyState.style.display = 'none';
+
         // Filter irrelevant headers
         const allowedHeaders = [
             'strict-transport-security',

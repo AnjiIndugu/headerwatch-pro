@@ -798,6 +798,10 @@ body {
 .splash-btn {
     background: var(--accent-primary); color: #000; border: none; padding: 1rem 2rem; border-radius: 8px; font-weight: 700; cursor: pointer; transition: filter 0.2s; font-size: 1.1rem;
 }
+
+#results-container {
+    display: none;
+}
 .splash-btn:hover { filter: brightness(1.2); }
 .splash-dots {
     position: absolute;
