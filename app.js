@@ -1,37 +1,37 @@
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('results-container').style.display = 'none';
-    
+
     // Splash screen logic
     const splashScreen = document.getElementById('splash-screen');
     const mainApp = document.getElementById('main-app');
     const splashVisited = localStorage.getItem('hw_visited');
-    
+
     if (!splashVisited && splashScreen && mainApp) {
         splashScreen.classList.remove('hidden');
         mainApp.classList.add('hidden');
-        
+
         let currentStep = 1;
         const steps = [1.5, 1.5, 1.5, 1.5, 10]; // durations in seconds
-        
+
         const advanceStep = () => {
             if (currentStep > 5) return;
             const el = document.getElementById(`splash-step-${currentStep}`);
-            if(el) el.classList.add('hidden');
+            if (el) el.classList.add('hidden');
             const dot = document.getElementById(`dot-${currentStep}`);
-            if(dot) dot.classList.remove('active');
-            
+            if (dot) dot.classList.remove('active');
+
             currentStep++;
             if (currentStep <= 5) {
                 const nEl = document.getElementById(`splash-step-${currentStep}`);
-                if(nEl) nEl.classList.remove('hidden');
+                if (nEl) nEl.classList.remove('hidden');
                 const nDot = document.getElementById(`dot-${currentStep}`);
-                if(nDot) nDot.classList.add('active');
-                setTimeout(advanceStep, steps[currentStep-1] * 1000);
+                if (nDot) nDot.classList.add('active');
+                setTimeout(advanceStep, steps[currentStep - 1] * 1000);
             } else {
                 finishSplash();
             }
         };
-        
+
         const finishSplash = () => {
             localStorage.setItem('hw_visited', 'true');
             splashScreen.style.animation = 'fadeOut 0.5s forwards';
@@ -41,13 +41,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 mainApp.style.animation = 'fadeIn 0.5s forwards';
             }, 500);
         };
-        
+
         setTimeout(advanceStep, steps[0] * 1000);
-        
+
         const splBtn = document.getElementById('splash-btn');
-        if(splBtn) splBtn.addEventListener('click', finishSplash);
+        if (splBtn) splBtn.addEventListener('click', finishSplash);
         const splSkip = document.getElementById('splash-skip');
-        if(splSkip) splSkip.addEventListener('click', finishSplash);
+        if (splSkip) splSkip.addEventListener('click', finishSplash);
     } else if (mainApp) {
         mainApp.classList.remove('hidden');
     }
@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnLoader = document.getElementById('scan-btn-loader');
     const errorBanner = document.getElementById('error-message');
     const resultsContainer = document.getElementById('results-container');
-    
+
     // UI Elements
     const elTargetUrl = document.getElementById('scan-target-url');
     const elGradeCircle = document.getElementById('grade-circle');
@@ -79,7 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!onboarded) {
             onboardingCard.style.display = 'block';
         }
-        
+
         const dismissBtn = document.getElementById('dismiss-onboarding');
         if (dismissBtn) {
             dismissBtn.addEventListener('click', () => {
@@ -130,9 +130,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     enforcedCount++;
                 }
             });
-            
+
             const text = `I scanned ${urlRaw} with HeaderWatch Pro.\n\n🛡 Security Grade: ${grade} (${score}/100)\n✅ Risk Level: ${risk}\n📋 ${enforcedCount} of ${totalCount} protections active\n\nCheck your website's security grade:\n${toolUrl}`;
-            
+
             sharePreviewText.textContent = text;
             shareModal.classList.remove('hidden');
         });
@@ -154,7 +154,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     form.addEventListener('submit', async (e) => {
-        if(e) e.preventDefault();
+        if (e) e.preventDefault();
         let targetUrl = urlInput.value.trim();
         if (!targetUrl) return;
 
@@ -173,12 +173,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         setLoading(true, targetUrl);
         hideError();
-        resultsContainer.classList.add('hidden');
+        resultsContainer.style.display = 'none';
         showHowItWorks();
 
         try {
             const urlWithProto = targetUrl;
-            
+
             const reqUrl = `${API_ENDPOINT}?url=${encodeURIComponent(urlWithProto)}`;
             const response = await fetch(reqUrl);
             const data = await response.json();
@@ -216,7 +216,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (inputWrapper) inputWrapper.classList.add('loading');
             if (fetchingMsg) {
                 let d = url;
-                try { d = new URL(url).hostname; } catch(e){}
+                try { d = new URL(url).hostname; } catch (e) { }
                 fetchingMsg.textContent = `Fetching headers from ${d}...`;
                 fetchingMsg.classList.remove('hidden');
             }
@@ -240,6 +240,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderResults(data) {
         document.getElementById('results-container').style.display = 'block';
+
         const emptyState = document.getElementById('emptyState');
         if (emptyState) emptyState.style.display = 'none';
 
@@ -258,7 +259,7 @@ document.addEventListener('DOMContentLoaded', () => {
             'cross-origin-opener-policy',
             'cross-origin-embedder-policy'
         ];
-        
+
         if (data && data.findings) {
             data.findings = data.findings.filter(f => allowedHeaders.includes(f.header.toLowerCase()));
         }
@@ -273,7 +274,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         elTargetUrl.textContent = data.final_url;
-        
+
         // Count up animation
         const obj = { val: 0 };
         const endScore = data.score;
@@ -293,10 +294,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         document.getElementById('confidence-value').textContent = data.confidence_overall;
         document.getElementById('confidence-bar').style.width = `${data.confidence_overall}%`;
-        
+
         let gradeLabel = "";
         let riskLabel = "";
-        
+
         if (data.score >= 85) {
             data.grade = 'A';
             gradeLabel = "EXCELLENT PROTECTION";
@@ -321,11 +322,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
         document.getElementById('risk-level').textContent = riskLabel;
         const now = new Date();
-        document.getElementById('scan-time').textContent = now.toUTCString().replace('GMT', 'UTC');
+        document.getElementById('scan-time').textContent =
+            now.toLocaleString('en-IN', {
+                timeZone: 'Asia/Kolkata',
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true
+            }) + ' IST';
 
         elGradeValue.textContent = data.grade;
         elGradeCircle.className = `grade-box grade-circle grade-${data.grade}`;
-        
+
         document.getElementById('score-text-level').textContent = gradeLabel;
         document.getElementById('score-text-level').className = `score-text-label grade-${data.grade}`;
         document.getElementById('grade-human-explanation').textContent = "";
@@ -337,8 +347,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         hideHowItWorks();
 
-        resultsContainer.classList.remove('hidden');
-
         // Apply staggered animations manually to sections
         const sections = [
             document.querySelector('.score-card-wrapper'),
@@ -346,12 +354,12 @@ document.addEventListener('DOMContentLoaded', () => {
             document.querySelector('.why-score-section'),
             document.querySelector('.raw-headers')
         ];
-        
+
         sections.forEach((sec, idx) => {
-            if(sec) {
-                sec.classList.remove('animate-in', `delay-${idx+1}`);
+            if (sec) {
+                sec.classList.remove('animate-in', `delay-${idx + 1}`);
                 void sec.offsetWidth; // force reflow
-                sec.classList.add('animate-in', `delay-${idx+1}`);
+                sec.classList.add('animate-in', `delay-${idx + 1}`);
             }
         });
 
@@ -363,14 +371,14 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderHeadersGrid(data) {
         elHeadersGrid.innerHTML = '';
         Object.keys(data.overview).forEach(headerName => {
-            const status = data.overview[headerName]; 
+            const status = data.overview[headerName];
             const cssClass = `badge-${status.toLowerCase()}`;
-            const badgeText = status === 'PRELOAD' ? '⬡ PRELOAD' : 
-                              status === 'ENFORCED' ? '✓ ENFORCED' : 
-                              status === 'OBSERVED' ? '◎ OBSERVED' : 
-                              status === 'MISSING' ? '✗ MISSING' : 
-                              status === 'LEGACY' ? '~ LEGACY' : 
-                              status === 'WEAK' ? '⚠ WEAK' : status;
+            const badgeText = status === 'PRELOAD' ? '⬡ PRELOAD' :
+                status === 'ENFORCED' ? '✓ ENFORCED' :
+                    status === 'OBSERVED' ? '◎ OBSERVED' :
+                        status === 'MISSING' ? '✗ MISSING' :
+                            status === 'LEGACY' ? '~ LEGACY' :
+                                status === 'WEAK' ? '⚠ WEAK' : status;
 
             const row = document.createElement('div');
             row.className = 'grid-row animate-in';
@@ -391,12 +399,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const elPartialList = document.getElementById('partial-findings-list');
         const elPartialTitle = document.getElementById('partial-title');
         const elPartialSubtext = document.getElementById('partial-subtext');
-        
+
         if (elInfoList) elInfoList.innerHTML = '';
         if (elPartialList) elPartialList.innerHTML = '';
         if (elPartialTitle) elPartialTitle.style.display = 'none';
         if (elPartialSubtext) elPartialSubtext.style.display = 'none';
-        
+
         const dict = getHumaneDict();
         let hasActiveGaps = false;
         let hasInfoGaps = false;
@@ -416,20 +424,20 @@ document.addEventListener('DOMContentLoaded', () => {
             const isSimplified = ['ENFORCED', 'PRELOAD', 'LEGACY', 'OBSERVED'].includes(f.status);
             const priorityClass = f.priority ? f.priority.toLowerCase() : 'info';
             const statusClass = f.status ? f.status.toLowerCase() : 'unknown';
-            
+
             const isPreload = f.status === 'PRELOAD';
             let statusBadgeText = isPreload ? '⬡ PRELOAD' : (f.status === 'ENFORCED' ? '✓ ENFORCED' : f.status);
             if (f.status === 'OBSERVED') statusBadgeText = '◎ OBSERVED';
             if (f.status === 'LEGACY') statusBadgeText = '~ LEGACY';
-            
+
             let card;
             if (isSimplified) {
                 card = document.createElement('div');
                 card.className = `finding-card priority-${priorityClass} animate-in delay-5`;
-                
+
                 let exactText = humanInfo.passingImpact;
                 if (f.status === 'PRELOAD' && humanInfo.preloadImpact) exactText = humanInfo.preloadImpact;
-                
+
                 card.innerHTML = `
                     <div class="finding-header" style="cursor: default; padding-bottom: 1rem;">
                         <div class="finding-header-top">
@@ -444,7 +452,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 card = document.createElement('details');
                 card.className = `finding-card priority-${priorityClass} animate-in delay-5`;
-                
+
                 if (f.status === 'MISSING' || f.status === 'WEAK_CONFIG') {
                     card.setAttribute('open', '');
                 }
@@ -496,7 +504,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 `;
             }
-            
+
             if (f.status === 'ENFORCED' || f.status === 'PRELOAD' || f.priority === 'Pass') {
                 elPassingList.appendChild(card);
             } else if (f.status === 'MISSING' || f.status === 'WEAK_CONFIG') {
@@ -525,14 +533,14 @@ document.addEventListener('DOMContentLoaded', () => {
         elHeadersGrid.innerHTML = '';
         const dict = getHumaneDict();
         Object.keys(data.overview).forEach(headerName => {
-            const status = data.overview[headerName]; 
+            const status = data.overview[headerName];
             const cssClass = `badge-${status.toLowerCase()}`;
-            const badgeText = status === 'PRELOAD' ? '⬡ PRELOAD' : 
-                              status === 'ENFORCED' ? '✓ ENFORCED' : 
-                              status === 'OBSERVED' ? '◎ OBSERVED' : 
-                              status === 'MISSING' ? '✗ MISSING' : 
-                              status === 'LEGACY' ? '~ LEGACY' : 
-                              status === 'WEAK' ? '⚠ WEAK' : status;
+            const badgeText = status === 'PRELOAD' ? '⬡ PRELOAD' :
+                status === 'ENFORCED' ? '✓ ENFORCED' :
+                    status === 'OBSERVED' ? '◎ OBSERVED' :
+                        status === 'MISSING' ? '✗ MISSING' :
+                            status === 'LEGACY' ? '~ LEGACY' :
+                                status === 'WEAK' ? '⚠ WEAK' : status;
 
             const lowKey = headerName.toLowerCase();
             const humanName = dict[lowKey] ? dict[lowKey].name : headerName;
@@ -596,9 +604,9 @@ document.addEventListener('DOMContentLoaded', () => {
             let color = status === 'MISSING' ? 'var(--accent-danger)' : 'var(--accent-success)';
             let sign = status === 'MISSING' ? '-' : '+';
             if (status === 'MISSING') color = 'var(--text-secondary)';
-            
+
             let ptVal = pts.replace(/[+-]/g, '');
-            
+
             const humanNames = {
                 'Strict-Transport-Security': 'Secure Connection Lock',
                 'Content-Security-Policy': 'Script Execution Shield',
@@ -608,10 +616,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 'Referrer-Policy': 'Link Privacy Shield',
                 'Permissions-Policy': 'Device Access Control'
             };
-            
+
             let label = humanNames[header] || header;
             let checkIcon = status === 'MISSING' ? '✗' : (status === 'PRELOAD' ? '⬡' : (status === 'OBSERVED' ? '◎' : '✓'));
-            
+
             if (status === 'MISSING') {
                 bdGridHtml += `<div style="margin-bottom: 0.5rem;"><div style="color: var(--text-primary);"><span style="color: var(--accent-danger); width: 20px; display: inline-block;">✗</span> ${label} <span style="float: right;">+0 pts</span></div><div style="color: var(--text-secondary); margin-left: 20px; font-size: 0.85rem;">"Not set up — ${ptVal} pts lost"</div></div>`;
             } else if (status === 'PRELOAD') {
@@ -622,11 +630,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 bdGridHtml += `<div style="margin-bottom: 0.5rem;"><div style="color: var(--text-primary);"><span style="color: var(--accent-success); width: 20px; display: inline-block;">✓</span> ${label} <span style="float: right;">+${ptVal} pts</span></div></div>`;
             }
         });
-        
+
         bdGridHtml += `<div style="margin-top: 1rem; color: var(--text-secondary); text-transform: uppercase;">Not Counted:</div>`;
         bdGridHtml += `<div style="margin-bottom: 0.25rem;"><div style="color: var(--text-secondary);"><span style="width: 20px; display: inline-block;">📜</span> Old XSS Filter <span style="float: right;">outdated standard</span></div></div>`;
         bdGridHtml += `<div style="margin-bottom: 0.25rem;"><div style="color: var(--text-secondary);"><span style="width: 20px; display: inline-block;">🏷</span> Server Tag <span style="float: right;">informational only</span></div></div>`;
-        
+
         bdGridHtml += `<div style="margin-top: 1rem; padding-top: 0.5rem; border-top: 1px dashed var(--border-color); font-weight: bold; display: flex; justify-content: space-between;">`;
         bdGridHtml += `<span>Total Score:</span> <span>${data.score} / 100</span></div></div>`;
 
@@ -635,7 +643,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Context paragraph
         const ctxLabel = document.getElementById('context-paragraph');
-        
+
         let ctx = "";
         if (data.grade === 'A') {
             ctx = "This site takes your protection seriously. Strong safety settings are active across the board.";
@@ -656,10 +664,10 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('curl-command').innerHTML = curlHtml;
 
         const importantHeaders = ['strict-transport-security', 'content-security-policy', 'content-security-policy-report-only', 'x-frame-options', 'x-content-type-options', 'referrer-policy', 'permissions-policy'];
-        
+
         let importantHtml = '';
         let otherHtml = '';
-        
+
         Object.keys(data.headers).sort().forEach(k => {
             const line = `  <span class="syntax-key">"${k}"</span>: <span class="syntax-string">"${data.headers[k]}"</span>\n`;
             if (importantHeaders.includes(k.toLowerCase())) {
@@ -668,7 +676,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 otherHtml += line;
             }
         });
-        
+
         let rawHtml = importantHtml;
         if (otherHtml) {
             rawHtml += `<div id="raw-other-headers" style="display: none;">\n${otherHtml}</div>`;
@@ -676,7 +684,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         elRawHeaders.innerHTML = rawHtml || '<span style="color:var(--text-muted);">No headers received</span>';
-        
+
         const toggleBtn = document.getElementById('toggle-raw-btn');
         if (toggleBtn) {
             toggleBtn.addEventListener('click', () => {
