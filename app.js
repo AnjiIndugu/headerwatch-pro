@@ -1,4 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('results-container').style.display = 'none';
+    
     // Splash screen logic
     const splashScreen = document.getElementById('splash-screen');
     const mainApp = document.getElementById('main-app');
